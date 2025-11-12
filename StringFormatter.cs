@@ -1,4 +1,5 @@
-﻿using System.Text;
+﻿using System;
+using System.Linq;
 
 namespace PointsBet_Backend_Online_Code_Test
 {
@@ -15,20 +16,25 @@ namespace PointsBet_Backend_Online_Code_Test
     public class StringFormatter
     {
 
-        //Code to improve
-        public static string ToCommaSepatatedList(string[] items, string quote)
-        {
-            StringBuilder qry = new StringBuilder(string.Format("{0}{1}{0}", quote, items[0]));
+        /// <summary>
+		/// Converts an array of strings into a comma-separated list.
+		/// If <paramref name="quote"/> is provided, each item is wrapped with it.
+		/// This method does not escape inner characters (not CSV/SQL aware).
+		/// </summary>
+		/// <param name="items">Array of strings to format.</param>
+		/// <param name="quote">Optional quote/delimiter to surround each item (e.g. ', ").</param>
+		/// <returns>A comma-separated string. Returns an empty string for an empty array.</returns>
+		public static string ToCommaSeparatedList(string[] items, string? quote)
+		{
+			if (items is null)
+				throw new ArgumentNullException(nameof(items));
 
-            if (items.Length > 1)
-            {
-                for (int i = 1; i < items.Length; i++)
-                {
-                    qry.Append(string.Format(", {0}{1}{0}", quote, items[i]));
-                }
-            }
+			if (items.Length == 0)
+				return string.Empty;
 
-            return qry.ToString();
-        }
+			quote ??= string.Empty;
+
+			return string.Join(", ", items.Select(item => $"{quote}{item ?? string.Empty}{quote}"));
+		}
     }
 }
